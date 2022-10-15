@@ -1,2 +1,3 @@
-ounass.jl
-farfetch.json
+*.jl
+*.json
+.ipynb_checkpoints/*
