@@ -8,6 +8,9 @@ import datetime
 from scripts import queries
 
 
+aws_hook = AwsHook('aws_credentials')
+credentials = aws_hook.get_credentials()
+
 
 dag = DAG(
     dag_id='test_dag',
@@ -29,6 +32,24 @@ create_table = PostgresOperator(
     dag=dag,
     postgres_conn_id="redshift",
     sql=queries.create_all_tables
+)
+
+stage_ounass_to_redshift = PostgresOperator(
+    task_id='stage_ounass_to_redshift',
+    dag=dag,
+    postgres_conn_id="redshift",
+    sql="""
+    COPY {}
+        FROM '{}'
+        ACCESS_KEY_ID '{}'
+        SECRET_ACCESS_KEY '{}'
+        JSON 's3://scraper-bucket-lux/category_jsonpath.json'
+        region 'us-east-1'
+    """.format('ounass_staging', 
+    's3://scraper-bucket-lux/ounass_mini.json', 
+    credentials.access_key,
+    credentials.secret_key
+    )
 )
 
 dag_start >> drop_tables >> create_table

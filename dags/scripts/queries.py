@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS ounass_staging (
     subcategory varchar, 
     price varchar, 
     currency varchar,
-    price_discount float, 
+    price_discount varchar, 
     sold_out boolean, 
     primary_label varchar,
     image_url varchar, 
-    text varchar);
+    text varchar(256));
 """
 
 create_staging_farfetch = """
@@ -33,11 +33,11 @@ CREATE TABLE IF NOT EXISTS farfetch_staging (
     subcategory varchar, 
     price varchar, 
     currency varchar,
-    price_discount float, 
+    price_discount varchar, 
     sold_out boolean, 
     primary_label varchar,
     image_url varchar, 
-    text varchar);
+    text varchar(256));
 """
 
 create_factOunass = """
