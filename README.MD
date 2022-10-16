@@ -56,6 +56,10 @@ Data quality check includes:
 3. Check for null values in essential dimensions and facts
 4. Ensure all prices are integers
 5. Unecessary categories and brands are removed
+
+### Data Dictionary
+![Data Dictionary](images/data_dictionary.png)
+
 ---
 ## Project Details
 ### Data Update Frequency

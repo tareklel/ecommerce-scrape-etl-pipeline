@@ -5,6 +5,8 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 #from airflow.operators.python_operator import PythonOperator
 import datetime
+from scripts import queries
+
 
 
 dag = DAG(
@@ -15,11 +17,18 @@ dag = DAG(
 
 dag_start = DummyOperator(task_id='etl_start')
 
-create_table = PostgresOperator(
-    task_id="create_table",
+drop_tables = PostgresOperator(
+    task_id="drop_tables",
     dag=dag,
     postgres_conn_id="redshift",
-    sql="CREATE TABLE IF NOT EXISTS test2 (column1 varchar, column2 INT);"
+    sql=queries.drop_tables
 )
 
-dag_start >> create_table
+create_table = PostgresOperator(
+    task_id="create_tables",
+    dag=dag,
+    postgres_conn_id="redshift",
+    sql=queries.create_all_tables
+)
+
+dag_start >> drop_tables >> create_table
