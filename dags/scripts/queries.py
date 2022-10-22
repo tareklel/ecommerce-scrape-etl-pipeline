@@ -16,15 +16,16 @@ CREATE TABLE IF NOT EXISTS ounass_staging (
     sold_out boolean, 
     primary_label varchar,
     image_url varchar, 
-    text varchar(256));
+    text varchar(max));
 """
 
 create_staging_farfetch = """
 CREATE TABLE IF NOT EXISTS farfetch_staging (
     site varchar, 
-    crawl_date date, 
+    crawl_date bigint, 
     country varchar, 
-    url varchar, 
+    url varchar,
+    subfolder varchar,
     portal_itemid int,
     product_name varchar,
     gender varchar, 
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS farfetch_staging (
     sold_out boolean, 
     primary_label varchar,
     image_url varchar, 
-    text varchar(256));
+    text varchar(max));
 """
 
 create_factOunass = """
@@ -136,3 +137,12 @@ create_tables = [
 ]
 
 create_all_tables = ' '.join(str(x) for x in create_tables)
+truncate_tables = """
+TRUNCATE TABLE factFaretch;
+TRUNCATE TABLE factOunass;
+TRUNCATE TABLE obtBrandPricing
+"""
+
+load_factOunass = ''
+load_factFarfetch = ''
+load_obt = ''
