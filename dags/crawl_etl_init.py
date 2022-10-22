@@ -3,6 +3,7 @@ from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 import datetime
+from datetime import timedelta
 from scripts import queries
 from scripts import config
 
@@ -10,11 +11,20 @@ from scripts import config
 aws_hook = AwsHook('aws_credentials')
 credentials = aws_hook.get_credentials()
 
+default_args = {
+    'owner': 'tareklel',
+    'depends_on_past': True,
+    'retries': 3,
+    'retry_delay': timedelta(minutes=5),
+    'catchup': False,
+}
 
 dag = DAG(
     dag_id='set_up_redshift',
-    start_date=datetime.datetime(2022, 10, 12),
-    schedule_interval='00 * * 1 *',
+    default_args=default_args,
+    start_date=datetime.datetime(2022, 10, 22),
+    description='Load data and data dictionaries from S3 buckets',
+    schedule_interval='0 6 * * *'
 )
 
 dag_start = DummyOperator(task_id='etl_start')

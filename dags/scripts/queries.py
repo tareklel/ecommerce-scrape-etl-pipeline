@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS ounass_staging (
     crawl_date date, 
     country varchar, 
     url varchar, 
-    portal_itemid int,
+    portal_itemid varchar,
     product_name varchar,
     gender varchar, 
     brand varchar,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS farfetch_staging (
     country varchar, 
     url varchar,
     subfolder varchar,
-    portal_itemid int,
+    portal_itemid varchar,
     product_name varchar,
     gender varchar, 
     brand varchar,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS factOunass (
     ounass_scrape_id INT IDENTITY(0,1) NOT NULL,
     crawl_date date, 
     country varchar, 
-    ounass_product_id int,
+    ounass_product_id varchar,
     gender varchar, 
     brand varchar,
     category varchar, 
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS factFarfetch (
     farfetch_scrape_id INT IDENTITY(0,1) NOT NULL,
     crawl_date date, 
     country varchar, 
-    farfetch_product_id int,
+    farfetch_product_id varchar,
     gender varchar, 
     brand varchar,
     category varchar, 
@@ -200,6 +200,7 @@ where
     and farfetch_staging.portal_itemid is not null
     and farfetch_staging.gender in ('women', 'men')
     and farfetch_staging.category in ('Clothing', 'Shoes', 'Bags')
+    and farfetch_staging.portal_itemid != 'item'
     ;
 """
 load_obt = """
