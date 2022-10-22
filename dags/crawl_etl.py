@@ -1,16 +1,8 @@
 from airflow import DAG
-from airflow.contrib.hooks.aws_hook import AwsHook
-from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
-#from airflow.operators.python_operator import PythonOperator
 import datetime
 from scripts import queries
-from scripts import config
-
-
-aws_hook = AwsHook('aws_credentials')
-credentials = aws_hook.get_credentials()
 
 
 dag = DAG(
@@ -28,5 +20,25 @@ truncate_tables = PostgresOperator(
     sql=queries.truncate_tables
 )
 
+insert_ounass = PostgresOperator(
+    task_id="insert_ounass",
+    dag=dag,
+    postgres_conn_id="redshift",
+    sql=queries.load_factOunass
+)
 
-dag_start >> truncate_tables
+insert_farfetch = PostgresOperator(
+    task_id="insert_farfetch",
+    dag=dag,
+    postgres_conn_id="redshift",
+    sql=queries.load_factFarfetch
+)
+
+load_obt = PostgresOperator(
+    task_id="load_obt",
+    dag=dag,
+    postgres_conn_id="redshift",
+    sql=queries.load_obt
+)
+
+dag_start >> truncate_tables >> [insert_ounass, insert_farfetch] >> load_obt

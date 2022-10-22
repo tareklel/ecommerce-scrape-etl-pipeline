@@ -1,9 +1,7 @@
 from airflow import DAG
 from airflow.contrib.hooks.aws_hook import AwsHook
-from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
-#from airflow.operators.python_operator import PythonOperator
 import datetime
 from scripts import queries
 from scripts import config
@@ -107,7 +105,7 @@ category_to_redshift = PostgresOperator(
         region 'us-east-1'
     """.format(
         'dimCategory', 
-        config.brand_path, 
+        config.category_path, 
         credentials.access_key,
         credentials.secret_key,
     )
