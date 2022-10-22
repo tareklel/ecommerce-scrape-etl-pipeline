@@ -3,6 +3,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 import datetime
 from scripts import queries
+from scripts.data_quality import DataQualityOperator
 
 
 dag = DAG(
@@ -41,4 +42,29 @@ load_obt = PostgresOperator(
     sql=queries.load_obt
 )
 
-dag_start >> truncate_tables >> [insert_ounass, insert_farfetch] >> load_obt
+quality_test = [
+    {'test_sql':'select count(*) from factOunass',
+     'expected_result':0,
+     'comparison':'>'},
+    {'test_sql':'select count(*) from factFarfetch',
+     'expected_result':0,
+     'comparison':'>'},
+    {'test_sql':'select count(*) from obtbrandpricing',
+     'expected_result':0,
+     'comparison':'>'},
+    {'test_sql':'select count(*) from factOunass where ounass_product_id is null',
+     'expected_result':'=',
+     'comparison':0,},
+    {'test_sql':'select count(*) from factFarfetch where farfetch_product_id is null',
+     'expected_result':'=',
+     'comparison':0,}
+]
+
+run_quality_checks = DataQualityOperator(
+    redshift_conn_id='redshift',
+    checks=quality_test,
+    task_id='Run_data_quality_checks',
+    dag=dag
+)
+
+dag_start >> truncate_tables >> [insert_ounass, insert_farfetch] >> load_obt >> run_quality_checks
